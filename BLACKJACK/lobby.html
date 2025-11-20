@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack Lobby</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #0f4c0f, #1a001a);
+            color: #fff;
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .lobby-container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
+            width: 90%;
+            max-width: 1000px;
+            text-align: center;
+        }
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 25px gold;
+            color: gold;
+        }
+        .subtitle { font-size: 1.5rem; margin-bottom: 50px; opacity: 0.9; }
+        .tabs { display: flex; justify-content: center; flex-wrap: wrap; gap: 25px; margin-top: 40px; }
+        .tab {
+            width: 280px; height: 380px; background: rgba(255,255,255,0.1); border-radius: 20px;
+            padding: 30px; transition: all 0.4s; cursor: pointer; border: 3px solid transparent;
+            backdrop-filter: blur(10px);
+        }
+        .tab:hover { transform: translateY(-15px); box-shadow: 0 20px 40px rgba(255,215,0,0.4); border-color: gold; }
+        .tab-icon { font-size: 5rem; margin-bottom: 20px; }
+        .tab h3 { font-size: 2rem; margin: 20px 0; color: gold; }
+        .tab p { font-size: 1.1rem; line-height: 1.6; opacity: 0.9; }
+        .play-button {
+            margin-top: 30px; background: linear-gradient(to bottom, #ffd700, #b8860b);
+            color: black; border: none; padding: 16px 40px; font-size: 1.4rem; font-weight: bold;
+            border-radius: 50px; cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.5); transition: all 0.3s;
+        }
+        .play-button:hover { transform: scale(1.1); box-shadow: 0 15px 30px rgba(255,215,0,0.6); }
+        footer { margin-top: 80px; opacity: 0.7; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<div class="lobby-container">
+    <h1>BLACKJACK</h1>
+    <p class="subtitle">Choose your game mode</p>
+
+    <div class="tabs">
+        <!-- SINGLE PLAYER -->
+        <div class="tab" onclick="window.location.href='index.html'">
+            <div class="tab-icon">User</div>
+            <h3>Single Player</h3>
+            <p>Practice against the dealer — perfect your strategy</p>
+            <button class="play-button">PLAY NOW</button>
+        </div>
+
+        <!-- MULTIPLAYER — NOW LIVE -->
+        <div class="tab" onclick="window.location.href='/multi'">
+            <div class="tab-icon">Users</div>
+            <h3>Multiplayer</h3>
+            <p>Play live with your friends — real-time table!</p>
+            <button class="play-button">PLAY NOW</button>
+        </div>
+
+        <!-- HOW TO PLAY -->
+        <div class="tab" onclick="document.getElementById('rules').style.display='block'">
+            <div class="tab-icon">Question</div>
+            <h3>How to Play</h3>
+            <p>Quick rules & payout info</p>
+            <button class="play-button">VIEW RULES</button>
+        </div>
+    </div>
+
+    <footer>Made for the boys — Good luck at the tables!</footer>
+</div>
+
+<!-- Rules Popup -->
+<div id="rules" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.97); z-index:999; padding:40px; overflow-y:auto;">
+    <div style="max-width:700px; margin:40px auto; background:rgba(255,255,255,0.1); padding:40px; border-radius:20px;">
+        <h2 style="color:gold; font-size:3rem; margin-bottom:30px;">How to Play Blackjack</h2>
+        <p style="font-size:1.3rem; line-height:2; text-align:left;">
+            • Goal: Get closer to 21 than the dealer without going over<br><br>
+            • Cards 2–10 = face value • J, Q, K = 10 • Ace = 1 or 11<br><br>
+            • Blackjack (Ace + 10-value) pays 3:2<br>
+            • Dealer stands on soft 17<br>
+            • Double down allowed on first two cards<br><br>
+            <strong>Beat the dealer. Take their money.</strong>
+        </p>
+        <button onclick="this.parentElement.parentElement.style.display='none'" 
+                style="margin-top:30px; padding:15px 40px; font-size:1.3rem; background:gold; color:black; border:none; border-radius:50px; cursor:pointer;">
+            CLOSE
+        </button>
+    </div>
+</div>
+
+</body>
+</html>

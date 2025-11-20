@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multiplayer Blackjack</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body { margin:0; background:linear-gradient(135deg,#0f4c0f,#1a001a); color:#fff; font-family:'Roboto'; min-height:100vh; display:flex; justify-content:center; align-items:center; padding:20px; }
+    .room { background:rgba(0,0,0,0.88); padding:30px; border-radius:25px; box-shadow:0 0 50px rgba(255,215,0,0.6); max-width:1300px; width:95%; }
+    h1 { font-family:'Playfair Display'; font-size:4rem; text-align:center; color:gold; text-shadow:0 0 30px gold; }
+    .status { text-align:center; font-size:1.6rem; margin:15px; font-weight:bold; }
+    .table-area { display:grid; grid-template-columns:1fr 320px; gap:30px; margin-top:20px; }
+    .dealer, .seat { background:rgba(255,255,255,0.08); border-radius:15px; padding:20px; text-align:center; }
+    .hand { display:flex; justify-content:center; flex-wrap:wrap; gap:12px; margin:20px 0; min-height:130px; }
+    .card { width:80px; height:115px; background:white; color:black; border-radius:12px; display:flex; flex-direction:column; justify-content:center; align-items:center; font-weight:bold; font-size:2rem; box-shadow:0 4px 15px rgba(0,0,0,0.6); animation:deal 0.6s; }
+    .card.red { color:red; }
+    .card.back { background:linear-gradient(45deg,#00008b,#0000cd); color:white; }
+    @keyframes deal { from { transform:translateY(-400px) rotate(-40deg); opacity:0; } }
+    .players-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:15px; margin-top:20px; }
+    .seat.active { border:3px solid gold; }
+    .seat.you { border:3px solid lime; }
+    .seat.turn { animation:pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100% { box-shadow:0 0 20px gold; } 50% { box-shadow:0 0 35px #ff0; } }
+    button { background:linear-gradient(#ffd700,#b8860b); color:black; border:none; padding:14px 30px; margin:8px; border-radius:50px; font-weight:bold; cursor:pointer; font-size:1.1rem; }
+    button:hover { transform:scale(1.05); }
+    #chat { background:rgba(0,0,0,0.5); height:380px; overflow-y:auto; padding:15px; border-radius:15px; }
+    input { width:100%; padding:12px; margin-top:8px; border:none; border-radius:10px; }
+  </style>
+</head>
+<body>
+<div class="room">
+  <h1>MULTIPLAYER BLACKJACK</h1>
+  <div class="status" id="status">Connecting...</div>
+
+  <div class="table-area">
+    <div>
+      <div class="dealer">
+        <h2>Dealer <span id="dealer-score">?</span></h2>
+        <div class="hand" id="dealer-hand"></div>
+      </div>
+      <div class="players-grid" id="players-grid"></div>
+    </div>
+
+    <div>
+      <h3>Live Chat</h3>
+      <div id="chat"></div>
+      <input type="text" id="msg-input" placeholder="Press Enter to send">
+
+      <div id="betting" style="text-align:center; margin-top:20px;">
+        <h3>Place Bet</h3>
+        <input type="number" id="bet-amount" min="10" value="50" style="width:100px; padding:8px;">
+        <button onclick="placeBet()">BET</button>
+      </div>
+
+      <div id="actions" style="display:none; text-align:center;">
+        <button onclick="act('hit')">HIT</button>
+        <button onclick="act('stand')">STAND</button>
+        <button onclick="act('double')">DOUBLE</button>
+      </div>
+
+      <button onclick="location.href='/'" style="margin-top:30px;">Back to Lobby</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const socket = io();
+let myId = null;
+
+socket.on('connect', () => {
+  myId = socket.id;
+  const name = prompt("Enter your name:", "Player") || "Player";
+  socket.emit('setName', name.substring(0,15));
+});
+
+function placeBet() {
+  const amt = parseInt(document.getElementById('bet-amount').value);
+  if (amt >= 10) socket.emit('placeBet', amt);
+}
+function act(action) { socket.emit('playerAction', action); }
+
+document.getElementById('msg-input').addEventListener('keypress', e => {
+  if (e.key === 'Enter' && e.target.value.trim()) {
+    socket.emit('chat', e.target.value.trim());
+    e.target.value = '';
+  }
+});
+
+socket.on('tableUpdate', data => {
+  document.getElementById('status').textContent = data.message || 'Waiting...';
+  document.getElementById('dealer-hand').innerHTML = data.dealerCards.map(c => 
+    `<div class="card ${c.hidden?'back':(c.suit==='♥'||c.suit==='♦'?'red':'')}">${c.hidden?'':c.rank+'<br>'+c.suit}</div>`
+  ).join('');
+  document.getElementById('dealer-score').textContent = data.dealerScore || '?';
+
+  const grid = document.getElementById('players-grid');
+  grid.innerHTML = '';
+  Object.values(data.players).forEach(p => {
+    const seat = document.createElement('div');
+    seat.className = `seat ${p.id===myId?'you':''} ${p.turn?'turn':''} active`;
+    seat.innerHTML = `<strong>${p.name}</strong><br>$${p.chips}<br>Bet: $${p.bet||0}
+      <div class="hand">${p.hand.map(c=>`<div class="card ${c.suit==='♥'||c.suit==='♦'?'red':''}">${c.rank}<br>${c.suit}</div>`).join('')}</div>
+      <div>${p.score||''} ${p.result?`<strong style="color:${p.result==='win'?'lime':p.result==='blackjack'?'gold':'red'}">${p.result.toUpperCase()}</strong>`:''}</div>`;
+    grid.appendChild(seat);
+  });
+
+  document.getElementById('betting').style.display = data.gameState==='betting'?'block':'none';
+  document.getElementById('actions').style.display = (data.gameState==='playing' && data.currentTurn===myId && !data.players[myId]?.result)?'block':'none';
+});
+
+socket.on('chat', msg => {
+  const chat = document.getElementById('chat');
+  const div = document.createElement('div');
+  div.textContent = msg;
+  div.style.marginBottom = '8px';
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+});
+</script>
+</body>
+</html>

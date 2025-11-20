@@ -1,0 +1,144 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #0f4c0f, #1a001a);
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    text-align: center;
+}
+
+h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 4.5rem;
+    margin-bottom: 20px;
+    text-shadow: 0 0 20px gold;
+    color: gold;
+}
+
+.game-container {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+    width: 90%;
+    max-width: 900px;
+}
+
+h2 {
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+}
+
+.cards {
+    min-height: 160px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+    padding: 10px;
+}
+
+.card {
+    width: 90px;
+    height: 130px;
+    background: white;
+    color: black;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.2rem;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+    position: relative;
+}
+
+.card.red { color: red; }
+.card.back {
+    background: linear-gradient(45deg, #00008b, #0000cd);
+    color: white;
+}
+
+.card::before {
+    position: absolute;
+    font-size: 1.5rem;
+    top: 8px;
+    left: 10px;
+}
+
+.card::after {
+    position: absolute;
+    font-size: 1.5rem;
+    bottom: 8px;
+    right: 10px;
+    transform: rotate(180deg);
+}
+
+.betting {
+    margin: 20px 0;
+}
+
+#bet-input {
+    padding: 12px;
+    width: 100px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 8px;
+    text-align: center;
+}
+
+button {
+    background: linear-gradient(to bottom, #ffd700, #b8860b);
+    color: black;
+    border: none;
+    padding: 14px 28px;
+    margin: 8px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+
+button:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 215, 0, 0.6);
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.controls {
+    margin: 20px 0;
+}
+
+#status-message {
+    font-size: 2rem;
+    min-height: 60px;
+    margin: 20px 0;
+    font-weight: bold;
+    text-shadow: 0 0 10px gold;
+}
+
+#balance-counter {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: gold;
+}
